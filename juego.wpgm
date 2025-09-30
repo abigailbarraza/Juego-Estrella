@@ -47,7 +47,7 @@ class Juego{
 
     method finalizarJuego(){
         game.stop()
-        game.showMessage("Juego Terminado Tu puntaje es: " + puntos + " y monedas: " + monedas)
+        game.showMessage("Juego terminado tu puntaje es: " + puntos + " y monedas: " + monedas)
     }
 
 
@@ -148,22 +148,32 @@ class poder inherits objetoCaida{
 }
 
 class escudo inherits poder{
-    method efectoPoder(){}
-    method activarPoder(){}
+    method efectoPoder(){
+
+    }
+    method activarPoder(){
+
+    }
 
 }
 class relentizador inherits poder{
-    method efectoPoder(){}
+    method efectoPoder(){
+
+    }
     method activarPoder(){}
 }
 
 class dobleMonedas inherits poder{
-    method efectoPoder(){}
+    method efectoPoder(){
+
+    }
     method activarPoder(){}
 }
 
 class masVelocidad inherits poder{
-    method efectoPoder(){}
+    method efectoPoder(){
+
+    }
     method activarPoder(){}
 }
 class vidaExtra inherits poder{
