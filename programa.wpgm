@@ -1,0 +1,6 @@
+import wollok.game.*
+import estrellas.*
+
+program ejemplo {
+    estrellas.juego.iniciar()
+}
