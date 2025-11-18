@@ -1,0 +1,61 @@
+import estrellas.*
+
+
+//testear que el personaje empieza el juego con 3 vidas, 0 monedas y 0 puntos
+test "personaje empieza con 3 vidas, 0 puntos y 0 monedas" {
+    assert.equals(3, personaje.vidas())
+    assert.equals(0,personaje.puntos())
+    assert.equals(0, personaje.monedas())
+}
+
+//testear que el personaje suma puntos correctamente sin el multiplicador
+test "sumar puntos sin multiplicador"{
+    personaje.multiplicador(false)
+    personaje.sumarPuntos()
+    assert.equals(10,  personaje.puntos())
+
+}
+
+//testear que el personaje suma puntos correctamente con el multiplicador
+test "sumar puntos con multiplicador"{
+    personaje.multiplicador(true)
+    personaje.sumarPuntos()
+    assert.equals(20, personaje.puntos())
+}
+
+//testear que el personaje suma monedas con el multiplicador
+test "sumar monedas sin multiplicador"{
+    personaje.multiplicador(true)
+    personaje.sumarPuntos()
+    assert.equals(1, personaje.monedas())
+}
+
+//testear que el personaje suma monedas sin el multiplicador
+test "sumar monedas con multiplicador"{
+    personaje.multiplicador(false)
+    personaje.sumarPuntos()
+    assert.equals(2, personaje.monedas())
+}
+
+//testear que el personaje reste vidas correctamente sin el escudo
+test "restar vidas sin escudo"{
+    personaje.escudo(false)
+    personaje.restarVidas()
+    assert.equals(2, personaje.vidas())
+}
+
+//testear que el personaje no reste vidas con el escudo
+test "restar vidas con escudo"{
+    personaje.escudo(true)
+    personaje.restarVidas()
+    assert.equals(3, personaje.vidas())
+}
+
+test "restar puntos sin que de negativo"{
+    const puntos= 5
+    personaje.puntos()
+    personaje.restarPuntos()
+    assert.equals(0, personaje.puntos)
+}
+
+

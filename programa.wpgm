@@ -1,6 +1,5 @@
 import wollok.game.*
 import estrellas.*
-
-program ejemplo {
+program ejemplo {               
     juego.iniciar()
 }
