@@ -114,23 +114,24 @@ object personaje {
     return 5000
   }
 }
+
 object indicadorVidas{
     method position() = game.at(24, 27)
     method text() = "Vidas: " + personaje.vidas()
     method textColor() = "white"
-
 }
+
 object indicadorPuntos{
     method position() = game.at(44, 27)
     method text() = "Puntos: " + personaje.puntos()
     method textColor() = "white"
 }
+
 object indicadorMonedas{
     method position() = game.at(34, 27)
     method text() = "Monedas: " + personaje.monedas()
     method textColor() = "white"
 }
-
 
 object iconoMultiplicador {
     method position() = game.at(1, 2)
@@ -155,36 +156,31 @@ object iconoRelentizar {
     method text() = "[4] Lento - 5"
     method textColor() = if(personaje.monedas() >= 5) "green" else "white"
 }
-class Estrella{
+class ObjetoCaible {
     var property position
-    const property image ="estrella.png"
-    
     method caer(){
         position = position.down(1)
     }
-    method atrapado(personaje){
+    method atrapado(personaje)
+}
+class Estrella inherits ObjetoCaible {
+    const property image = "estrella.png"
+
+    override method atrapado(personaje){
         personaje.sumarPuntos()
     }
 }
-class Meteorito{
-    var property position
-    const property image="meteorito.png"
-
-    method caer(){
-        position= position.down(1)
-    }
-    method atrapado(personaje){
+class Meteorito inherits ObjetoCaible {
+    const property image = "meteorito.png"
+    
+    override method atrapado(personaje){
         personaje.restarVidas()
     }
 }
-class Banana{
-    var property position
-    const property image ="banana.png"
-
-    method caer(){
-        position = position.down(1)
-    }
-    method atrapado(personaje){
+class Banana inherits ObjetoCaible {
+    const property image = "banana.png"
+    
+    override method atrapado(personaje){
         personaje.restarPuntos()
     }
 }
