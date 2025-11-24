@@ -49,7 +49,7 @@ object personaje {
   }
   
   method moverDer() {
-    if ((position.x() < 49) and (not juego.pausado())) {
+    if ((position.x() < 46) and (not juego.pausado())) {
       position = position.right(1)
     }
   }
@@ -116,46 +116,24 @@ object personaje {
 }
 
 object indicadorVidas{
-    method position() = game.at(24, 27)
+    method position() = game.at(58, 22)
     method text() = "Vidas: " + personaje.vidas()
-    method textColor() = "white"
+    method textColor() = "black"
 }
 
 object indicadorPuntos{
-    method position() = game.at(44, 27)
+    method position() = game.at(58, 19)
     method text() = "Puntos: " + personaje.puntos()
-    method textColor() = "white"
+    method textColor() = "black"
 }
 
 object indicadorMonedas{
-    method position() = game.at(34, 27)
+    method position() = game.at(58, 15)
     method text() = "Monedas: " + personaje.monedas()
-    method textColor() = "white"
+    method textColor() = "black"
 }
 
-object iconoMultiplicador {
-    method position() = game.at(1, 2)
-    method text() = "[1] Multi x2 - 15"
-    method textColor() = if(personaje.monedas() >= 15) "green" else "white"
-}
 
-object iconoEscudo {
-    method position() = game.at(15, 2)
-    method text() = "[2] Escudo - 10"
-    method textColor() = if(personaje.monedas() >= 10) "green" else "white"
-}
-
-object iconoVidaExtra {
-    method position() = game.at(28, 2)
-    method text() = "[3] Vida+ - 20"
-    method textColor() = if(personaje.monedas() >= 20 and personaje.vidas() <= 5) "green" else "white"
-}
-
-object iconoRelentizar {
-    method position() = game.at(41, 2)
-    method text() = "[4] Lento - 5"
-    method textColor() = if(personaje.monedas() >= 5) "green" else "white"
-}
 class ObjetoCaible {
     var property position
     method caer(){
@@ -214,7 +192,7 @@ object juego{
     }
     
     method iniciar(){
-        game.width(50)
+        game.width(65)
         game.height(30)
         game.cellSize(20)
         game.title("Atrapar Estrellas")
@@ -223,10 +201,7 @@ object juego{
         game.addVisual(indicadorVidas)
         game.addVisual(indicadorPuntos)
         game.addVisual(indicadorMonedas)
-        game.addVisual(iconoMultiplicador)
-        game.addVisual(iconoEscudo)
-        game.addVisual(iconoVidaExtra)
-        game.addVisual(iconoRelentizar)
+
         
         game.whenCollideDo(personaje, { objeto =>
             objeto.atrapado(personaje)
