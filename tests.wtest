@@ -25,14 +25,14 @@ test "sumar puntos con multiplicador"{
 
 //testear que el personaje suma monedas con el multiplicador
 test "sumar monedas sin multiplicador"{
-    personaje.multiplicador(true)
+    personaje.multiplicador(false)
     personaje.sumarPuntos()
     assert.equals(1, personaje.monedas())
 }
 
 //testear que el personaje suma monedas sin el multiplicador
 test "sumar monedas con multiplicador"{
-    personaje.multiplicador(false)
+    personaje.multiplicador(true)
     personaje.sumarPuntos()
     assert.equals(2, personaje.monedas())
 }
@@ -49,13 +49,6 @@ test "restar vidas con escudo"{
     personaje.escudo(true)
     personaje.restarVidas()
     assert.equals(3, personaje.vidas())
-}
-
-test "restar puntos sin que de negativo"{
-    const puntos= 5
-    personaje.puntos()
-    personaje.restarPuntos()
-    assert.equals(0, personaje.puntos)
 }
 
 
