@@ -27,9 +27,9 @@ object personaje {
   }
   
   method restarPuntos() {
-    if ((puntos > 0) and (not escudo)) {
+    if ((puntos >= 10) and (not escudo)) {
       puntos -= 10
-    }
+    } 
   }
   
   method sumarVidas() {
@@ -115,49 +115,31 @@ object personaje {
   }
 }
 
-object indicadorVidas{
-    method position() = game.at(58, 22)
-    method text() = "Vidas: " + personaje.vidas()
-    method textColor() = "black"
+class Indicador {
+  const property position
+  const property text
+  const property textColor
 }
-
-object indicadorPuntos{
-    method position() = game.at(58, 19)
-    method text() = "Puntos: " + personaje.puntos()
-    method textColor() = "black"
-}
-
-object indicadorMonedas{
-    method position() = game.at(58, 15)
-    method text() = "Monedas: " + personaje.monedas()
-    method textColor() = "black"
-}
-
 
 class ObjetoCaible {
     var property position
+    const property image
     method caer(){
         position = position.down(1)
     }
     method atrapado(personaje)
 }
-class Estrella inherits ObjetoCaible {
-    const property image = "estrella.png"
-
+class Estrella inherits ObjetoCaible(image = "estrella.png") {
     override method atrapado(personaje){
         personaje.sumarPuntos()
     }
 }
-class Meteorito inherits ObjetoCaible {
-    const property image = "meteorito.png"
-    
+class Meteorito inherits ObjetoCaible(image = "meteorito.png") {
     override method atrapado(personaje){
         personaje.restarVidas()
     }
 }
-class Banana inherits ObjetoCaible {
-    const property image = "banana.png"
-    
+class Banana inherits ObjetoCaible(image = "banana.png") {
     override method atrapado(personaje){
         personaje.restarPuntos()
     }
@@ -198,11 +180,13 @@ object juego{
         game.title("Atrapar Estrellas")
         game.boardGround("fondo.png")
         game.addVisual(personaje)
+        const indicadorVidas = new Indicador(position = game.at(58, 22), text = '' + personaje.vidas(), textColor = 'white');
+        const indicadorPuntos = new Indicador(position = game.at(58, 19), text = '' + personaje.puntos(), textColor = 'white');
+        const indicadorMonedas = new Indicador(position = game.at(58, 15), text = '' + personaje.monedas(), textColor = 'white');
         game.addVisual(indicadorVidas)
         game.addVisual(indicadorPuntos)
         game.addVisual(indicadorMonedas)
 
-        
         game.whenCollideDo(personaje, { objeto =>
             objeto.atrapado(personaje)
             game.removeVisual(objeto)
@@ -211,7 +195,7 @@ object juego{
 
         game.onTick(3000, "generar", {
             if(not self.pausado()){
-                const obj = self.elegir_entidadAleatoria(game.at(0.randomUpTo(50), 30))
+                const obj = self.elegir_entidadAleatoria(game.at(0.randomUpTo(45), 30))
                 objetosCaen.add(obj)
                 game.addVisual(obj)
             }
