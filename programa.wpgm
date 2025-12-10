@@ -1,5 +1,6 @@
 import wollok.game.*
 import estrellas.*
+import menu.*
 program ejemplo {               
-    juego.iniciar()
-}
+        menuPrincipal.iniciar()
+    }

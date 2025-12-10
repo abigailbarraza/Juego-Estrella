@@ -1,5 +1,5 @@
 import wollok.game.*
-
+import menu.*
 object personaje {
   var property image = "personaje.png"
   var property position = game.at(25, 0)
@@ -26,6 +26,11 @@ object personaje {
     }
   }
   
+  method sumaMonedas(){
+    monedas += 10
+  }
+
+
   method restarPuntos() {
     if ((puntos >= 10) and (not escudo)) {
       puntos -= 10
@@ -65,7 +70,7 @@ object personaje {
     if ((monedas >= 15) and (not multiplicador)) {
       multiplicador = true
       monedas -= 15
-      game.schedule(15000, { multiplicador = false })
+       game.schedule(15000, { multiplicador = false })
       game.schedule(15000, { game.say(self, "Multiplicador desactivado") })
       game.say(self, "¡Multiplicador activado!")
     } else {
@@ -144,6 +149,16 @@ class Banana inherits ObjetoCaible(image = "banana.png") {
         personaje.restarPuntos()
     }
 }
+class Monedas inherits ObjetoCaible(image= "moneda.png"){
+    override method atrapado(personaje){
+        personaje.sumaMonedas()
+    }
+}
+class Vidaas inherits ObjetoCaible(image = "vidaas.png"){
+    override method atrapado(personaje){
+        personaje.sumarVidas()
+    }
+}
 
 object juego{   
     const objetosCaen = []
@@ -186,6 +201,7 @@ object juego{
         game.addVisual(indicadorVidas)
         game.addVisual(indicadorPuntos)
         game.addVisual(indicadorMonedas)
+
 
         game.whenCollideDo(personaje, { objeto =>
             objeto.atrapado(personaje)
@@ -234,7 +250,7 @@ object juego{
         keyboard.num(3).onPressDo{personaje.comprarVidaExtra()}
         keyboard.num(4).onPressDo{personaje.comprarRelentizar()}
 
-        game.start()
+    
     }
     
     method elegir_entidadAleatoria(pos){
@@ -242,12 +258,16 @@ object juego{
 
         var obj = null
 
-        if(n >= 0 and n < 5){
+        if(n >= 0 and n < 4){
             obj = new Estrella(position = pos);
-        } else if(n>=5 and n<=8){
+        } else if(n>=4 and n<=6){
             obj = new Meteorito(position = pos);
-        } else {
+        } else  if(n>=6 and n<=8){
             obj = new Banana(position = pos);
+        } else if (n==9){
+            obj = new Monedas(position = pos);
+        } else{
+            obj = new Vidaas(position = pos);
         }
         return obj;   
     }
