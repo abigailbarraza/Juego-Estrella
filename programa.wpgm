@@ -1,6 +1,12 @@
 import wollok.game.*
 import estrellas.*
 import menu.*
-program ejemplo {               
-        menuPrincipal.iniciar()
-    }
+
+program ejemplo {
+    game.width(65)
+    game.height(30)
+    game.cellSize(20)
+    menuPrincipal.iniciar()
+    game.start()
+  
+}

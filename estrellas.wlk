@@ -1,5 +1,6 @@
 import wollok.game.*
 import menu.*
+
 object personaje {
   var property image = "personaje.png"
   var property position = game.at(25, 0)
@@ -16,6 +17,16 @@ object personaje {
   
   method monedas() = monedas
   
+  method reiniciar() {
+    position = game.at(25, 0)
+    puntos = 0
+    vidas = 3
+    monedas = 0
+    multiplicador = false
+    escudo = false
+    relentizacion = false
+  }
+  
   method sumarPuntos() {
     if (multiplicador) {
       puntos += 20
@@ -29,7 +40,6 @@ object personaje {
   method sumaMonedas(){
     monedas += 10
   }
-
 
   method restarPuntos() {
     if ((puntos >= 10) and (not escudo)) {
@@ -70,7 +80,7 @@ object personaje {
     if ((monedas >= 15) and (not multiplicador)) {
       multiplicador = true
       monedas -= 15
-       game.schedule(15000, { multiplicador = false })
+      game.schedule(15000, { multiplicador = false })
       game.schedule(15000, { game.say(self, "Multiplicador desactivado") })
       game.say(self, "¡Multiplicador activado!")
     } else {
@@ -126,6 +136,14 @@ class Indicador {
   const property textColor
 }
 
+class IndicadorDinamico {
+  const property position
+  const closure
+  const property textColor
+  
+  method text() = closure.apply()
+}
+
 class ObjetoCaible {
     var property position
     const property image
@@ -134,26 +152,31 @@ class ObjetoCaible {
     }
     method atrapado(personaje)
 }
+
 class Estrella inherits ObjetoCaible(image = "estrella.png") {
     override method atrapado(personaje){
         personaje.sumarPuntos()
     }
 }
+
 class Meteorito inherits ObjetoCaible(image = "meteorito.png") {
     override method atrapado(personaje){
         personaje.restarVidas()
     }
 }
+
 class Banana inherits ObjetoCaible(image = "banana.png") {
     override method atrapado(personaje){
         personaje.restarPuntos()
     }
 }
+
 class Monedas inherits ObjetoCaible(image= "moneda.png"){
     override method atrapado(personaje){
         personaje.sumaMonedas()
     }
 }
+
 class Vidaas inherits ObjetoCaible(image = "vidaas.png"){
     override method atrapado(personaje){
         personaje.sumarVidas()
@@ -163,6 +186,7 @@ class Vidaas inherits ObjetoCaible(image = "vidaas.png"){
 object juego{   
     const objetosCaen = []
     var property pausado = false
+    var juegoTerminado = false
     
     method pausar(){
         pausado = true
@@ -189,19 +213,36 @@ object juego{
     }
     
     method iniciar(){
-        game.width(65)
-        game.height(30)
-        game.cellSize(20)
+        personaje.reiniciar()
+        objetosCaen.clear()
+        pausado = false
+        juegoTerminado = false  
+        
+        
         game.title("Atrapar Estrellas")
         game.boardGround("fondo.png")
+        
         game.addVisual(personaje)
-        const indicadorVidas = new Indicador(position = game.at(58, 22), text = '' + personaje.vidas(), textColor = 'white');
-        const indicadorPuntos = new Indicador(position = game.at(58, 19), text = '' + personaje.puntos(), textColor = 'white');
-        const indicadorMonedas = new Indicador(position = game.at(58, 15), text = '' + personaje.monedas(), textColor = 'white');
+        
+       
+        const indicadorVidas = new IndicadorDinamico(
+            position = game.at(58, 22), 
+            closure = {  personaje.vidas().stringValue() }, 
+            textColor = "white"
+        )
+        const indicadorPuntos = new IndicadorDinamico(
+            position = game.at(58, 19), 
+            closure = { personaje.puntos().stringValue() }, 
+            textColor = "white"
+        )
+        const indicadorMonedas = new IndicadorDinamico(
+            position = game.at(58, 15), 
+            closure = {  personaje.monedas().stringValue() }, 
+            textColor = "white"
+        )
         game.addVisual(indicadorVidas)
         game.addVisual(indicadorPuntos)
         game.addVisual(indicadorMonedas)
-
 
         game.whenCollideDo(personaje, { objeto =>
             objeto.atrapado(personaje)
@@ -249,37 +290,61 @@ object juego{
         keyboard.num(2).onPressDo{personaje.comprarEscudo()}
         keyboard.num(3).onPressDo{personaje.comprarVidaExtra()}
         keyboard.num(4).onPressDo{personaje.comprarRelentizar()}
-
-    
     }
     
-    method elegir_entidadAleatoria(pos){
-        const n = 1.randomUpTo(10)
+method elegir_entidadAleatoria(pos){
+    const n = 1.randomUpTo(100) 
+    var obj = null
 
-        var obj = null
-
-        if(n >= 0 and n < 4){
-            obj = new Estrella(position = pos);
-        } else if(n>=4 and n<=6){
-            obj = new Meteorito(position = pos);
-        } else  if(n>=6 and n<=8){
-            obj = new Banana(position = pos);
-        } else if (n==9){
-            obj = new Monedas(position = pos);
-        } else{
-            obj = new Vidaas(position = pos);
-        }
-        return obj;   
+    if(n >= 1 and n <= 40){
+        obj = new Estrella(position = pos); 
+    } else if(n >= 41 and n <= 60){
+        obj = new Banana(position = pos); 
+    } else if(n >= 61 and n <= 80){
+        obj = new Meteorito(position = pos); 
+    } else if(n >= 81 and n <= 90){
+        obj = new Monedas(position = pos); 
+    } else {
+        obj = new Vidaas(position = pos); 
     }
+    return obj;   
+}
     
     method estadoJuego(){
-        if(personaje.vidas()<=0){
-            game.say(personaje, "Game Over! Puntos: " + personaje.puntos())
-            game.stop()
+        
+        if(not juegoTerminado) {
+            if(personaje.vidas()<=0){
+                juegoTerminado = true  
+                
+               
+                const puntajeFinal = personaje.puntos()
+                tablaPuntaje.agregarPuntajes(new Puntaje(puntos = puntajeFinal))
+                tablaPuntaje.actualizarPuntajes(tablaPuntaje.todosPuntajes())
+                
+                console.println("Puntaje guardado: " + puntajeFinal)
+                console.println("Total de puntajes: " + tablaPuntaje.todosPuntajes().size())
+                
+                game.say(personaje, "Game Over! Puntos: " + puntajeFinal)
+                game.schedule(2000, { self.volverAlMenu() })
+            }
+            if(personaje.puntos()>=500){
+                juegoTerminado = true  
+                
+                const puntajeFinal = personaje.puntos()
+                tablaPuntaje.agregarPuntajes(new Puntaje(puntos = puntajeFinal))
+                tablaPuntaje.actualizarPuntajes(tablaPuntaje.todosPuntajes())
+                
+                console.println("Puntaje guardado: " + puntajeFinal)
+                console.println("Total de puntajes: " + tablaPuntaje.todosPuntajes().size())
+                
+                game.say(personaje, "¡Ganaste! Puntos: " + puntajeFinal)
+                game.schedule(2000, { self.volverAlMenu() })
+            }
         }
-        if(personaje.puntos()>=500){
-            game.say(personaje, "¡Ganaste! Puntos: " + personaje.puntos())
-            game.stop()
-        }
+    }
+    
+    method volverAlMenu() {
+        game.clear()
+        menuPrincipal.iniciar()
     }
 }
