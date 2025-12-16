@@ -130,18 +130,18 @@ object personaje {
   }
 }
 
-class Indicador {
+class IndicadorFijo {
   const property position
   const property text
   const property textColor
 }
 
-class IndicadorDinamico {
+class IndicadoresNoFijos {
   const property position
-  const closure
+  const texto
   const property textColor
   
-  method text() = closure.apply()
+  method text() = texto.apply()
 }
 
 class ObjetoCaible {
@@ -151,35 +151,62 @@ class ObjetoCaible {
         position = position.down(1)
     }
     method atrapado(personaje)
+
+    method mensaje(){ }
 }
 
 class Estrella inherits ObjetoCaible(image = "estrella.png") {
     override method atrapado(personaje){
         personaje.sumarPuntos()
+        self.mensaje()
+    }
+    override method mensaje() {
+        game.say(personaje, "+10 pts!")
     }
 }
 
 class Meteorito inherits ObjetoCaible(image = "meteorito.png") {
     override method atrapado(personaje){
         personaje.restarVidas()
+        self.mensaje()
+    }
+    override method mensaje() {
+        if(personaje.escudo()) {
+            game.say(personaje, "no me lastima, escudo activado!")
+        } else {
+            game.say(personaje, "auch! -1 vida")
+        }
     }
 }
+
 
 class Banana inherits ObjetoCaible(image = "banana.png") {
     override method atrapado(personaje){
         personaje.restarPuntos()
+        self.mensaje()
+    }
+    override method mensaje() {
+        game.say(personaje, "me resbale!! -10 pts")
     }
 }
 
 class Monedas inherits ObjetoCaible(image= "moneda.png"){
     override method atrapado(personaje){
         personaje.sumaMonedas()
+        self.mensaje()
+    }
+    override method mensaje(){
+        game.say(personaje, "wow, +10 monedas!")
     }
 }
 
 class Vidaas inherits ObjetoCaible(image = "vidaas.png"){
     override method atrapado(personaje){
         personaje.sumarVidas()
+        self.mensaje()
+    }
+     override method mensaje(){
+        game.say(personaje, "si! +1 vida")
     }
 }
 
@@ -225,19 +252,19 @@ object juego{
         game.addVisual(personaje)
         
        
-        const indicadorVidas = new IndicadorDinamico(
+        const indicadorVidas = new IndicadoresNoFijos(
             position = game.at(58, 22), 
-            closure = {  personaje.vidas().stringValue() }, 
+            texto = {  personaje.vidas().stringValue() }, 
             textColor = "white"
         )
-        const indicadorPuntos = new IndicadorDinamico(
+        const indicadorPuntos = new IndicadoresNoFijos(
             position = game.at(58, 19), 
-            closure = { personaje.puntos().stringValue() }, 
+            texto = { personaje.puntos().stringValue() }, 
             textColor = "white"
         )
-        const indicadorMonedas = new IndicadorDinamico(
+        const indicadorMonedas = new IndicadoresNoFijos(
             position = game.at(58, 15), 
-            closure = {  personaje.monedas().stringValue() }, 
+            texto = {  personaje.monedas().stringValue() }, 
             textColor = "white"
         )
         game.addVisual(indicadorVidas)
@@ -310,40 +337,29 @@ method elegir_entidadAleatoria(pos){
     return obj;   
 }
     
-    method estadoJuego(){
-        
-        if(not juegoTerminado) {
-            if(personaje.vidas()<=0){
-                juegoTerminado = true  
-                
-               
-                const puntajeFinal = personaje.puntos()
-                tablaPuntaje.agregarPuntajes(new Puntaje(puntos = puntajeFinal))
-                tablaPuntaje.actualizarPuntajes(tablaPuntaje.todosPuntajes())
-                
-                console.println("Puntaje guardado: " + puntajeFinal)
-                console.println("Total de puntajes: " + tablaPuntaje.todosPuntajes().size())
-                
-                game.say(personaje, "Game Over! Puntos: " + puntajeFinal)
-                game.schedule(2000, { self.volverAlMenu() })
-            }
-            if(personaje.puntos()>=500){
-                juegoTerminado = true  
-                
-                const puntajeFinal = personaje.puntos()
-                tablaPuntaje.agregarPuntajes(new Puntaje(puntos = puntajeFinal))
-                tablaPuntaje.actualizarPuntajes(tablaPuntaje.todosPuntajes())
-                
-                console.println("Puntaje guardado: " + puntajeFinal)
-                console.println("Total de puntajes: " + tablaPuntaje.todosPuntajes().size())
-                
-                game.say(personaje, "¡Ganaste! Puntos: " + puntajeFinal)
-                game.schedule(2000, { self.volverAlMenu() })
-            }
+method estadoJuego(){
+    if(not juegoTerminado) {
+        if(personaje.vidas() <= 0){
+            self.terminarJuego("Game Over! Puntos: ")
+        }
+        if(personaje.puntos() >= 500){
+            self.terminarJuego("¡Ganaste! Puntos: ")
         }
     }
+}
+
+method terminarJuego(mensaje){
+    juegoTerminado = true
     
-    method volverAlMenu() {
+    const puntajeFinal = personaje.puntos()
+    tablaPuntaje.agregarPuntajes(new Puntaje(puntos = puntajeFinal))
+    tablaPuntaje.actualizarPuntajes(tablaPuntaje.todosPuntajes())
+    
+    game.say(personaje, mensaje + puntajeFinal)
+    game.schedule(2000, { self.volverAlMenu() })
+}
+    
+  method volverAlMenu() {
         game.clear()
         menuPrincipal.iniciar()
     }

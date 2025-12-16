@@ -54,18 +54,18 @@ object menuPrincipal {
         game.title("Top 5 Puntajes")
         game.boardGround("fondo.png")
         
-        const titulo = new Indicador(position = game.at(22, 25), text = "TOP 5 PUNTAJES", textColor = "white")
+        const titulo = new IndicadorFijo(position = game.at(22, 25), text = "TOP 5 PUNTAJES", textColor = "white")
         game.addVisual(titulo)
         
         if(tablaPuntaje.top5().isEmpty()) {
-            const mensaje = new Indicador(position = game.at(18, 18), text = "NO HAY PUNTAJES TODAVIA", textColor = "white")
+            const mensaje = new IndicadorFijo(position = game.at(18, 18), text = "NO HAY PUNTAJES TODAVIA", textColor = "white")
             game.addVisual(mensaje)
         } else {
             var posY = 20
             var posicion = 1
             tablaPuntaje.top5().forEach({ puntaje =>
                 const textoMostrar = posicion.stringValue() + ". " + puntaje.puntos().stringValue() + " pts"
-                const linea = new Indicador(
+                const linea = new IndicadorFijo(
                     position = game.at(28, posY), 
                     text = textoMostrar, 
                     textColor = "white"
@@ -76,7 +76,7 @@ object menuPrincipal {
             })
         }
         
-        const volver = new Indicador(position = game.at(28, 5), text = "Apreta M para volver al menu", textColor = "white")
+        const volver = new IndicadorFijo(position = game.at(28, 5), text = "Apreta M para volver al menu", textColor = "white")
         game.addVisual(volver)
         
         keyboard.m().onPressDo({
